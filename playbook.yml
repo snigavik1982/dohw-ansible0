@@ -1,17 +1,16 @@
 ---
+- hosts: all
+  tasks:
+  - name: disable SELinux
+    command: /sbin/setenforce 0
 
-hosts: all
-	- name disable SELinux (just in case)
-	command /sbin/setenforce 0
+  - name: /etc/hosts update central
+    lineinfile: dest=/etc/hosts
+                insertafter=EOF
+                line='172.16.16.11 CENTRAL CENTRAL'
+  - name: /etc/hosts update worker
+    lineinfile: dest=/etc/hosts
+                insertafter=EOF
+                line='172.16.16.21 WORKER WORKER'
+...
 
-	- name /etc/hosts update central
-	- lineinfile:
-	path: /etc/hosts
-	insertafter: EOF
-	line: '172.16.16.11 CENTRAL CENTRAL'
-
-	- name /etc/hosts update worker
-	- lineinfile:
-	path: /etc/hosts
-	insertafter: EOF
-	line: '172.16.16.21 WORKER WORKER'
