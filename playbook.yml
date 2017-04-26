@@ -2,9 +2,6 @@
 - hosts: all
   remote_user: root
   tasks:
-  - name: disable SELinux
-    command: /sbin/setenforce 0
-
   - name: /etc/hosts update central
     lineinfile: dest=/etc/hosts
                 insertafter=EOF
