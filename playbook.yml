@@ -1,6 +1,6 @@
 ---
-- hosts: all
-	tasks:
+
+hosts: all
 	- name disable SELinux (just in case)
 	command /sbin/setenforce 0
 
