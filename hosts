@@ -1,1 +1,5 @@
 default ansible_connection=local
+[central]
+CENTRAL
+[workers]
+WORKER
