@@ -1,14 +1,10 @@
 ---
-- hosts: all
+- hosts: workers
   remote_user: root
   tasks:
-  - name: /etc/hosts update central
+  - name: /etc/hosts update workers
     lineinfile: dest=/etc/hosts
                 insertafter=EOF
                 line='172.16.16.11 CENTRAL CENTRAL'
-  - name: /etc/hosts update worker
-    lineinfile: dest=/etc/hosts
-                insertafter=EOF
-                line='172.16.16.21 WORKER WORKER'
 ...
 
