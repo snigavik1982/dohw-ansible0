@@ -20,4 +20,8 @@
       src: /etc/ansible/templates/rabbitmq.config
       dest: /etc/rabbitmq/rabbitmq.config
       backup: yes
+  - name: enable RabbitMQ
+    service:
+      name: rabbitmq-server
+      state: started
 ...
