@@ -5,6 +5,14 @@
   - name: /etc/hosts update workers
     lineinfile: dest=/etc/hosts
                 insertafter=EOF
+                state=present
+                regexp='^172\.16\.16\.11'
                 line='172.16.16.11 CENTRAL CENTRAL'
+- hosts: central
+  remote_user: root
+  tasks:
+  - name: install RabbitMQ AMQP
+    yum:
+      name: rabbitmq-server
+      state: present
 ...
-
