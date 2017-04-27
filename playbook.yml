@@ -15,4 +15,9 @@
     yum:
       name: rabbitmq-server
       state: present
+  - name: copy RabbitMQ conf file from templates
+    copy:
+      src: /etc/ansible/templates/rabbitmq.config
+      dest: /etc/rabbitmq/rabbitmq.config
+      backup: yes
 ...
