@@ -8,6 +8,17 @@
                 state=present
                 regexp='^172\.16\.16\.11'
                 line='172.16.16.11 CENTRAL CENTRAL'
+  - name: install pika
+    yum:
+      name: python2-pika
+      state: present
+  - name: Worker App install - mkdir
+    shell: mkdir /opt/urbunny/
+  - name: Worker App install - receiver.py
+    copy:
+      src: /etc/ansible/apps/reader/receiver.py
+      dst: /opt/urbunny/receiver.py
+
 - hosts: central
   remote_user: root
   tasks:
@@ -18,16 +29,42 @@
   - name: config RabbitMQ - reverse dns lookup
     replace:
       path: /etc/rabbitmq/rabbitmq.config
-      regexp: '(\s+)%%\{reverse_dns_lookups\,\ false\}\,'
-      replace: '(\s+)\{reverse_dns_lookups\,\ false\}\,'
+      regexp: '%%\ \{reverse_dns_lookups,\ true\},'
+      replace: '{reverse_dns_lookups, false},'
   - name: config RabbitMQ - guest connect
     replace:
       path: /etc/rabbitmq/rabbitmq.config
-      regexp: '(\s+)%%\{loopback_users\,\ \[\]\}\,'
-      replace: '(\s+)\{loopback_users\,\ \[\]\}'
+      regexp: '%%\ \{loopback_users,\ \[\]\},'
+      replace: '{loopback_users, []}'
   - name: enable RabbitMQ
     service:
       name: rabbitmq-server
       state: started
       enabled: yes
+  - name: Java install
+    yum:
+      name: java
+      state: present
+  - name: App install - mkdir
+    shell: mkdir /opt/urbunny/
+  - name: App install - Send.java
+    copy:
+      src: /etc/ansible/apps/writer/Send.java
+      dest: /opt/urbunny/Send.java
+  - name: App install - amqp-client
+    copy:
+      src: /etc/ansible/apps/writer/amqp-client-4.0.2.jar
+      dest: /opt/urbunny/amqp-client-4.0.2.jar
+  - name: App install - slf4j-api
+    copy:
+      src: /etc/ansible/apps/writer/slf4j-api-1.7.21.jar
+      dest: /opt/urbunny/slf4j-api-1.7.21.jar
+  - name: App install - slf4j-simple
+    copy:
+      src: /etc/ansible/apps/writer/slf4j-simple-1.7.22.jar
+      dest: /opt/urbunny/slf4j-simple-1.7.22.jar
+  - name: App install - QClog.sh
+    copy:
+      src: /etc/ansible/apps/writer/QClog.sh
+      dest: /opt/urbunny/QClog.sh
 ...
