@@ -49,6 +49,7 @@
     copy:
       src: /etc/ansible/apps/writer/QClog.sh
       dest: /opt/urbunny/QClog.sh
+      mode: 0755
 
 - hosts: workers
   remote_user: root

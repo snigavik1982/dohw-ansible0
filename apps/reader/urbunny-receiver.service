@@ -5,7 +5,9 @@ After=network.target
 [Service]
 Type=simple
 User=root
-ExecStart=/usr/bin/python /opt/urbunny/receiver.py &> /opt/urbunny/receiver.log &
+ExecStart=/bin/bash -c /opt/urbunny/receiver.py
+StandardOutput=syslog
+StandardError=syslog
 Restart=on-abort
 
 
