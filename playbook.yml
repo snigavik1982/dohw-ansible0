@@ -17,7 +17,7 @@
   - name: Worker App install - receiver.py
     copy:
       src: /etc/ansible/apps/reader/receiver.py
-      dst: /opt/urbunny/receiver.py
+      dest: /opt/urbunny/receiver.py
 
 - hosts: central
   remote_user: root
