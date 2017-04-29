@@ -2,48 +2,50 @@
 - hosts: central
   remote_user: root
   tasks:
-  - name: install RabbitMQ AMQP
+  - name: Central OS - install RabbitMQ
     yum:
       name: rabbitmq-server
       state: present
-  - name: config RabbitMQ - reverse dns lookup
+  - name: Central RabbitMQ - reverse dns lookup
     replace:
       path: /etc/rabbitmq/rabbitmq.config
       regexp: '%%\ \{reverse_dns_lookups,\ true\},'
       replace: '{reverse_dns_lookups, false},'
-  - name: config RabbitMQ - guest connect
+  - name: Central RabbitMQ - guest connect
     replace:
       path: /etc/rabbitmq/rabbitmq.config
       regexp: '%%\ \{loopback_users,\ \[\]\},'
       replace: '{loopback_users, []}'
-  - name: enable RabbitMQ
+  - name: Central OS - RabbitMQ enable
     service:
       name: rabbitmq-server
       state: started
       enabled: yes
-  - name: Java install
+  - name: Central OS - Java install
     yum:
       name: java
       state: present
-  - name: App install - mkdir
-    shell: if [ ! -d /opt/urbunny ]; then mkdir /opt/urbunny; fi
-  - name: App install - Send.java
+  - name: Central App - mkdir
+    file:
+      path: /opt/urbunny
+      state: directory
+  - name: Central App - install Send.java
     copy:
       src: /etc/ansible/apps/writer/Send.java
       dest: /opt/urbunny/Send.java
-  - name: App install - amqp-client
+  - name: Central App - install amqp-client
     copy:
       src: /etc/ansible/apps/writer/amqp-client-4.0.2.jar
       dest: /opt/urbunny/amqp-client-4.0.2.jar
-  - name: App install - slf4j-api
+  - name: Central App - install slf4j-api
     copy:
       src: /etc/ansible/apps/writer/slf4j-api-1.7.21.jar
       dest: /opt/urbunny/slf4j-api-1.7.21.jar
-  - name: App install - slf4j-simple
+  - name: Central App - install slf4j-simple
     copy:
       src: /etc/ansible/apps/writer/slf4j-simple-1.7.22.jar
       dest: /opt/urbunny/slf4j-simple-1.7.22.jar
-  - name: App install - QClog.sh
+  - name: Central App - install QClog.sh
     copy:
       src: /etc/ansible/apps/writer/QClog.sh
       dest: /opt/urbunny/QClog.sh
@@ -51,26 +53,33 @@
 - hosts: workers
   remote_user: root
   tasks:
-  - name: /etc/hosts update workers
+  - name: Worker OS - /etc/hosts
     lineinfile: dest=/etc/hosts
                 insertafter=EOF
                 state=present
                 regexp='^172\.16\.16\.11'
                 line='172.16.16.11 CENTRAL CENTRAL'
-  - name: install pika
+  - name: Worker OS - install pika
     yum:
       name: python2-pika
       state: present
-  - name: Worker App install - mkdir
-    shell: mkdir /opt/urbunny/
-  - name: Worker App install - receiver.py
+  - name: Worker App - mkdir
+    file:
+      path: /opt/urbunny
+      state: directory
+  - name: Worker App - receiver.py
     copy:
       src: /etc/ansible/apps/reader/receiver.py
       dest: /opt/urbunny/receiver.py
-  - name: Worker App install - systemd
+  - name: Worker App - systemd config
     copy:
       src: /etc/ansible/apps/reader/urbunny-receiver.service
       dest: /etc/systemd/system/urbunny-receiver.service
   - name: Worker App install - systemd reload
     shell: systemctl daemon-reload
+  - name: Worker App - service enable
+    service:
+      name: urbunny-receiver
+      state: started
+      enabled: yes
 ...
