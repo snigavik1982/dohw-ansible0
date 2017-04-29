@@ -1,0 +1,13 @@
+[Unit]
+Description=RabbitMQ receiver
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/python /opt/urbunny/receive.py &> /opt/urbunny/receive.log &
+Restart=on-abort
+
+
+[Install]
+WantedBy=multi-user.target

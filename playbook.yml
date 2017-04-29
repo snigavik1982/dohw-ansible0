@@ -18,6 +18,13 @@
     copy:
       src: /etc/ansible/apps/reader/receiver.py
       dest: /opt/urbunny/receiver.py
+  - name: Worker App install - systemd
+    copy:
+      src: /etc/ansible/apps/reader/urbunny-receiver.service
+      dest: /etc/systemd/system/urbunny-receiver.service
+  - name: Worker App install - systemd reload
+    systemd:
+      daemon_reload: yes
 
 - hosts: central
   remote_user: root
