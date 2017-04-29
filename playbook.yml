@@ -1,30 +1,4 @@
 ---
-- hosts: workers
-  remote_user: root
-  tasks:
-  - name: /etc/hosts update workers
-    lineinfile: dest=/etc/hosts
-                insertafter=EOF
-                state=present
-                regexp='^172\.16\.16\.11'
-                line='172.16.16.11 CENTRAL CENTRAL'
-  - name: install pika
-    yum:
-      name: python2-pika
-      state: present
-  - name: Worker App install - mkdir
-    shell: mkdir /opt/urbunny/
-  - name: Worker App install - receiver.py
-    copy:
-      src: /etc/ansible/apps/reader/receiver.py
-      dest: /opt/urbunny/receiver.py
-  - name: Worker App install - systemd
-    copy:
-      src: /etc/ansible/apps/reader/urbunny-receiver.service
-      dest: /etc/systemd/system/urbunny-receiver.service
-  - name: Worker App install - systemd reload
-    shell: systemctl daemon-reload
-
 - hosts: central
   remote_user: root
   tasks:
@@ -52,7 +26,7 @@
       name: java
       state: present
   - name: App install - mkdir
-    shell: mkdir /opt/urbunny/
+    shell: if [ ! -d /opt/urbunny ]; then mkdir /opt/urbunny; fi
   - name: App install - Send.java
     copy:
       src: /etc/ansible/apps/writer/Send.java
@@ -73,4 +47,30 @@
     copy:
       src: /etc/ansible/apps/writer/QClog.sh
       dest: /opt/urbunny/QClog.sh
+
+- hosts: workers
+  remote_user: root
+  tasks:
+  - name: /etc/hosts update workers
+    lineinfile: dest=/etc/hosts
+                insertafter=EOF
+                state=present
+                regexp='^172\.16\.16\.11'
+                line='172.16.16.11 CENTRAL CENTRAL'
+  - name: install pika
+    yum:
+      name: python2-pika
+      state: present
+  - name: Worker App install - mkdir
+    shell: mkdir /opt/urbunny/
+  - name: Worker App install - receiver.py
+    copy:
+      src: /etc/ansible/apps/reader/receiver.py
+      dest: /opt/urbunny/receiver.py
+  - name: Worker App install - systemd
+    copy:
+      src: /etc/ansible/apps/reader/urbunny-receiver.service
+      dest: /etc/systemd/system/urbunny-receiver.service
+  - name: Worker App install - systemd reload
+    shell: systemctl daemon-reload
 ...
