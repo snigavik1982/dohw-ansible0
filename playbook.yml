@@ -98,7 +98,7 @@
       replace: 'DBPassword=zabbix'
   - name: Central Zabbix - start zabbix-server
     service:
-      name: zabbix-server
+      name: zabbix-server-mysql
       state: started
       enabled: yes
   - name: Central Zabbix - php post_max_size
