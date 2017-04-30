@@ -62,7 +62,8 @@
       name: zabbix22-server-mysql, zabbix22-web-mysql, mariadb-server
       state: present
   - name: Central Zabbix - start MariaDB
-      service: mariadb
+    service:
+      name: mariadb
       state: started
       enabled: yes
   - name: Central Zabbix - DB initial setup
@@ -92,7 +93,8 @@
       regexp: '#\ DBPassword=\Z'
       replace: 'DBPassword=zabbix\Z'
   - name: Central Zabbix - start zabbix-server
-    service: zabbix-server
+    service:
+      name: zabbix-server
       state: started
       enabled: yes
   - name: Central Zabbix - php post_max_size
