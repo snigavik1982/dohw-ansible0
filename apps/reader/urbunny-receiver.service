@@ -8,7 +8,8 @@ User=root
 ExecStart=/bin/bash -c /opt/urbunny/receiver.py
 StandardOutput=syslog
 StandardError=syslog
-Restart=on-abort
+Restart=always
+RestartSec=5
 
 
 [Install]

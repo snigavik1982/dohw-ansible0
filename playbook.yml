@@ -45,6 +45,13 @@
     copy:
       src: /etc/ansible/apps/writer/slf4j-simple-1.7.22.jar
       dest: /opt/urbunny/slf4j-simple-1.7.22.jar
+  - name: Central App - compile
+    shell: cd /opt/urbunny && /usr/bin/javac -cp amqp-client-4.0.2.jar Send.java
+  - name: Central App - install QClog.sh
+    copy:
+      src: /etc/ansible/apps/writer/QSend.sh
+      dest: /opt/urbunny/QSend.sh
+      mode: 0755
   - name: Central App - install QClog.sh
     copy:
       src: /etc/ansible/apps/writer/QClog.sh
@@ -72,6 +79,7 @@
     copy:
       src: /etc/ansible/apps/reader/receiver.py
       dest: /opt/urbunny/receiver.py
+      mode: 0755
   - name: Worker App - systemd config
     copy:
       src: /etc/ansible/apps/reader/urbunny-receiver.service
@@ -83,4 +91,68 @@
       name: urbunny-receiver
       state: started
       enabled: yes
+
+hosts: central
+ - name: Central OS - install Zabbix Server
+   yum:
+     name: zabbix22-server-mysql, zabbix22-web-mysql, mariadb-server
+     state: present
+ - name: Central Zabbix - start MariaDB
+     service: mariadb
+     state: started
+     enabled: yes
+ - name: Central Zabbix - DB initial setup
+   shell: /usr/bin/mysql -uroot < /etc/ansible/apps/zabbix/zabbix1.sql
+     creates: /etc/zabbix/db_setup_complete
+ - name: Central Zabbix - DB schema setup
+   shell: /usr/bin/mysql -uroot zabbix < /usr/share/zabbix-mysql/schema.sql
+     creates: /etc/zabbix/db_setup_complete
+ - name: Central Zabbix - DB images setup
+   shell: /usr/bin/mysql -uroot zabbix < /usr/share/zabbix-mysql/images.sql
+     creates: /etc/zabbix/db_setup_complete 
+ - name: Central Zabbix - DB data setup
+   shell: /usr/bin/mysql -uroot zabbix < /usr/share/zabbix-mysql/data.sql
+     creates: /etc/zabbix/db_setup_complete
+ - name: Central Zabbix - really dumb way to mark DB data setup completion
+   file:
+     path: /etc/zabbix/db_setup_complete
+     state: touch
+ - name: Central Zabbix - DBHost
+    replace:
+      path: /etc/zabbix/zabbix_server.conf
+      regexp: '#\ DBHost=localhost\Z'
+      replace: 'DBHost=localhost\Z'
+ - name: Central Zabbix - DBPassword
+    replace:
+      path: /etc/zabbix/zabbix_server.conf
+      regexp: '#\ DBPassword=\Z'
+      replace: 'DBPassword=zabbix\Z'
+ - name: Central Zabbix - start zabbix-server
+     service: zabbix-server
+     state: started
+     enabled: yes
+ - name: Central Zabbix - php post_max_size
+    replace:
+      path: /etc/php.ini
+      regexp: 'post_max_size\ =\ 8M\Z'
+      replace: 'post_max_size = 16M\Z'
+ - name: Central Zabbix - php max_execution_time
+    replace:
+      path: /etc/php.ini
+      regexp: 'max_execution_time\ =\ 30\Z'
+      replace: 'max_execution_time = 300\Z'
+ - name: Central Zabbix - php max_input_time
+    replace:
+      path: /etc/php.ini
+      regexp: 'max_input_time\ =\ 60\Z'
+      replace: 'max_input_time = 300\Z'
+ - name: Central Zabbix - php max_input_time
+    replace:
+      path: /etc/php.ini
+      regexp: ';date.timezone\ =\Z'
+      replace: 'date.timezone = Europe/Riga\Z'
+ - name: Central Zabbix - start httpd
+     service: httpd
+     state: started
+     enabled: yes
 ...
