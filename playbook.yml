@@ -57,44 +57,6 @@
       src: /etc/ansible/apps/writer/QClog.sh
       dest: /opt/urbunny/QClog.sh
       mode: 0755
-
-- hosts: workers
-  remote_user: root
-  tasks:
-  - name: Worker OS - /etc/hosts
-    lineinfile: dest=/etc/hosts
-                insertafter=EOF
-                state=present
-                regexp='^172\.16\.16\.11'
-                line='172.16.16.11 CENTRAL CENTRAL'
-  - name: Worker OS - install pika
-    yum:
-      name: python2-pika
-      state: present
-  - name: Worker App - mkdir
-    file:
-      path: /opt/urbunny
-      state: directory
-  - name: Worker App - receiver.py
-    copy:
-      src: /etc/ansible/apps/reader/receiver.py
-      dest: /opt/urbunny/receiver.py
-      mode: 0755
-  - name: Worker App - systemd config
-    copy:
-      src: /etc/ansible/apps/reader/urbunny-receiver.service
-      dest: /etc/systemd/system/urbunny-receiver.service
-  - name: Worker App install - systemd reload
-    shell: systemctl daemon-reload
-  - name: Worker App - service enable
-    service:
-      name: urbunny-receiver
-      state: started
-      enabled: yes
-
- - hosts: central
-   remote_user: root
-   tasks:
  - name: Central OS - install Zabbix Server
    yum:
      name: zabbix22-server-mysql, zabbix22-web-mysql, mariadb-server
@@ -157,4 +119,38 @@
      service: httpd
      state: started
      enabled: yes
+
+- hosts: workers
+  remote_user: root
+  tasks:
+  - name: Worker OS - /etc/hosts
+    lineinfile: dest=/etc/hosts
+                insertafter=EOF
+                state=present
+                regexp='^172\.16\.16\.11'
+                line='172.16.16.11 CENTRAL CENTRAL'
+  - name: Worker OS - install pika
+    yum:
+      name: python2-pika
+      state: present
+  - name: Worker App - mkdir
+    file:
+      path: /opt/urbunny
+      state: directory
+  - name: Worker App - receiver.py
+    copy:
+      src: /etc/ansible/apps/reader/receiver.py
+      dest: /opt/urbunny/receiver.py
+      mode: 0755
+  - name: Worker App - systemd config
+    copy:
+      src: /etc/ansible/apps/reader/urbunny-receiver.service
+      dest: /etc/systemd/system/urbunny-receiver.service
+  - name: Worker App install - systemd reload
+    shell: systemctl daemon-reload
+  - name: Worker App - service enable
+    service:
+      name: urbunny-receiver
+      state: started
+      enabled: yes
 ...
