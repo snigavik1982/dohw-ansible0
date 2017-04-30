@@ -68,15 +68,19 @@
       enabled: yes
   - name: Central Zabbix - DB initial setup
     shell: /usr/bin/mysql -uroot < /etc/ansible/apps/zabbix/zabbix1.sql
+    args:
       creates: /etc/zabbix/db_setup_complete
   - name: Central Zabbix - DB schema setup
     shell: /usr/bin/mysql -uroot zabbix < /usr/share/zabbix-mysql/schema.sql
+    args:
       creates: /etc/zabbix/db_setup_complete
   - name: Central Zabbix - DB images setup
     shell: /usr/bin/mysql -uroot zabbix < /usr/share/zabbix-mysql/images.sql
+    args:
       creates: /etc/zabbix/db_setup_complete 
   - name: Central Zabbix - DB data setup
     shell: /usr/bin/mysql -uroot zabbix < /usr/share/zabbix-mysql/data.sql
+    args:
       creates: /etc/zabbix/db_setup_complete
   - name: Central Zabbix - really dumb way to mark DB data setup completion
     file:
