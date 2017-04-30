@@ -92,7 +92,9 @@
       state: started
       enabled: yes
 
-hosts: central
+ - hosts: central
+   remote_user: root
+   tasks:
  - name: Central OS - install Zabbix Server
    yum:
      name: zabbix22-server-mysql, zabbix22-web-mysql, mariadb-server
