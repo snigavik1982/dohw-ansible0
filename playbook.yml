@@ -23,7 +23,7 @@
       enabled: yes
   - name: Central OS - Java install
     yum:
-      name: java
+      name: java, java-devel
       state: present
   - name: Central App - mkdir
     file:
