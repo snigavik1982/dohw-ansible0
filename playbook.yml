@@ -57,6 +57,58 @@
       src: /etc/ansible/apps/writer/QClog.sh
       dest: /opt/urbunny/QClog.sh
       mode: 0755
+  - name: Central Ganglia - install
+    yum:
+      name: ganglia, ganglia-gmetad, ganglia-gmond, ganglia-web
+      state: present
+  - name: Central Ganglia - config gmetad cluster name
+    replace:
+      path: /etc/ganglia/gmetad.conf
+      insertafter : '\#\ data_source \"another\ source\"\ 1\.3\.4\.7\:8655\ \ 1\.3\.4\.8'
+      line: 'data_source "urbunny" CENTRAL'
+      state: present
+  - name: Central Ganglia - config gmond cluster name
+    replace:
+      path: /etc/ganglia/gmetad.conf
+      regexp: 'name\ =\ "unspecified"'
+      replace: 'name = "urbunny"'
+  - name: Central Ganglia - config gmond unicast
+    replace:
+      path: /etc/ganglia/gmond.conf
+      regexp: 'mcast_join\ =\ 239\.2\.11\.71'
+      replace: '#mcast_join = 239.2.11.71'
+  - name: Central Ganglia - config gmond unicast2
+    replace:
+      path: /etc/ganglia/gmond.conf
+      regexp: 'bind\ =\ 239\.2\.11\.71'
+      replace: '#bind = 239.2.11.71'
+  - name: Central Ganglia - config gmond receive
+    replace:
+      path: /etc/ganglia/gmond.conf
+      insertafter : 'udp_send_channel\ \{'
+      line: 'host = CENTRAL'
+      state: present
+  - name: Central Ganglia - config htpasswd
+    shell: /usr/bin/htpasswd -bc /etc/httpd/auth.basic admin admin
+  - name: Central Ganglia - httpd config
+    copy:
+      src: /etc/ansible/apps/ganglia/ganglia.conf
+      dest: /etc/httpd/conf.d/ganglia.conf
+  - name: Central Ganglia - gmetad enable
+    service:
+      name: gmetad
+      state: started
+      enabled: yes
+  - name: Central Ganglia - gmond enable
+    service:
+      name: gmond
+      state: started
+      enabled: yes
+  - name: Central Ganglia - httpd enable
+    service:
+      name: httpd
+      state: started
+      enabled: yes
 
 - hosts: workers
   remote_user: root
@@ -89,6 +141,36 @@
   - name: Worker App - service enable
     service:
       name: urbunny-receiver
+      state: started
+      enabled: yes
+  - name: Worker Ganglia - install
+    yum:
+      name: ganglia, ganglia-gmond
+      state: present
+  - name: Worker Ganglia - config gmond cluster name
+    replace:
+      path: /etc/ganglia/gmetad.conf
+      regexp: 'name\ =\ "unspecified"'
+      replace: 'name = "urbunny"'
+  - name: Worker Ganglia - config gmond unicast
+    replace:
+      path: /etc/ganglia/gmond.conf
+      regexp: 'mcast_join\ =\ 239\.2\.11\.71'
+      replace: '#mcast_join = 239.2.11.71'
+  - name: Worker Ganglia - config gmond unicast2
+    replace:
+      path: /etc/ganglia/gmond.conf
+      regexp: 'bind\ =\ 239\.2\.11\.71'
+      replace: '#bind = 239.2.11.71'
+  - name: Worker Ganglia - config gmond receive
+    replace:
+      path: /etc/ganglia/gmond.conf
+      insertafter : 'udp_send_channel\ \{'
+      line: 'host = CENTRAL'
+      state: present
+  - name: Central Ganglia - gmond enable
+    service:
+      name: gmond
       state: started
       enabled: yes
 ...
