@@ -66,7 +66,7 @@
       name: ganglia, ganglia-gmetad, ganglia-gmond, ganglia-web
       state: present
   - name: Central Ganglia - config gmetad cluster name
-   replace:
+    replace:
       path: /etc/ganglia/gmetad.conf
       regexp: 'data_source\ "my\ cluster"\ localhost'
       replace: 'data_source "urbunny" central'
