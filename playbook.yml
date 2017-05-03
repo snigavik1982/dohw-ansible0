@@ -62,7 +62,7 @@
       name: ganglia, ganglia-gmetad, ganglia-gmond, ganglia-web
       state: present
   - name: Central Ganglia - config gmetad cluster name
-    replace:
+    lineinfile:
       path: /etc/ganglia/gmetad.conf
       insertafter : '\#\ data_source \"another\ source\"\ 1\.3\.4\.7\:8655\ \ 1\.3\.4\.8'
       line: 'data_source "urbunny" CENTRAL'
@@ -83,7 +83,7 @@
       regexp: 'bind\ =\ 239\.2\.11\.71'
       replace: '#bind = 239.2.11.71'
   - name: Central Ganglia - config gmond receive
-    replace:
+    lineinfile:
       path: /etc/ganglia/gmond.conf
       insertafter : 'udp_send_channel\ \{'
       line: 'host = CENTRAL'
@@ -163,7 +163,7 @@
       regexp: 'bind\ =\ 239\.2\.11\.71'
       replace: '#bind = 239.2.11.71'
   - name: Worker Ganglia - config gmond receive
-    replace:
+    lineinfile:
       path: /etc/ganglia/gmond.conf
       insertafter : 'udp_send_channel\ \{'
       line: 'host = CENTRAL'
