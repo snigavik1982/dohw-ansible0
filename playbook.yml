@@ -66,11 +66,10 @@
       name: ganglia, ganglia-gmetad, ganglia-gmond, ganglia-web
       state: present
   - name: Central Ganglia - config gmetad cluster name
-    lineinfile:
+   replace:
       path: /etc/ganglia/gmetad.conf
-      insertafter : '\#\ data_source \"another\ source\"\ 1\.3\.4\.7\:8655\ \ 1\.3\.4\.8'
-      line: 'data_source "urbunny" CENTRAL'
-      state: present
+      regexp: 'data_source\ "my\ cluster"\ localhost'
+      replace: 'data_source "urbunny" central'
   - name: Central Ganglia - config gmond cluster name
     replace:
       path: /etc/ganglia/gmetad.conf
@@ -90,7 +89,7 @@
     lineinfile:
       path: /etc/ganglia/gmond.conf
       insertafter : 'udp_send_channel\ \{'
-      line: 'host = CENTRAL'
+      line: 'host = central'
       state: present
   - name: Central Ganglia - config htpasswd
     shell: /usr/bin/htpasswd -bc /etc/httpd/auth.basic admin admin
@@ -163,7 +162,7 @@
     lineinfile:
       path: /etc/ganglia/gmond.conf
       insertafter : 'udp_send_channel\ \{'
-      line: 'host = CENTRAL'
+      line: 'host = central'
       state: present
   - name: Central Ganglia - gmond enable
     service:
