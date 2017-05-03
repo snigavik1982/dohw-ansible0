@@ -147,11 +147,6 @@
     yum:
       name: ganglia, ganglia-gmond
       state: present
-  - name: Worker Ganglia - config gmond cluster name
-    replace:
-      path: /etc/ganglia/gmetad.conf
-      regexp: 'name\ =\ "unspecified"'
-      replace: 'name = "urbunny"'
   - name: Worker Ganglia - config gmond unicast
     replace:
       path: /etc/ganglia/gmond.conf
