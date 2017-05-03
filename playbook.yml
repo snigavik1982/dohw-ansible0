@@ -2,6 +2,10 @@
 - hosts: central
   remote_user: root
   tasks:
+  - name: Central OS - hosts file
+    copy:
+      src: /etc/ansible/apps/hosts
+      dest: /etc/hosts
   - name: Central OS - install RabbitMQ
     yum:
       name: rabbitmq-server
@@ -113,12 +117,10 @@
 - hosts: workers
   remote_user: root
   tasks:
-  - name: Worker OS - /etc/hosts
-    lineinfile: dest=/etc/hosts
-                insertafter=EOF
-                state=present
-                regexp='^172\.16\.16\.11'
-                line='172.16.16.11 CENTRAL CENTRAL'
+  - name: Worker OS - hosts file
+    copy:
+      src: /etc/ansible/apps/hosts
+      dest: /etc/hosts
   - name: Worker OS - install pika
     yum:
       name: python2-pika
