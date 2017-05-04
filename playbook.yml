@@ -53,7 +53,7 @@
       dest: /opt/urbunny/slf4j-simple-1.7.22.jar
   - name: Central App - compile
     shell: cd /opt/urbunny && /usr/bin/javac -cp amqp-client-4.0.2.jar Send.java
-  - name: Central App - install QClog.sh
+  - name: Central App - install QSend.sh
     copy:
       src: /etc/ansible/apps/writer/QSend.sh
       dest: /opt/urbunny/QSend.sh

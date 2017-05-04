@@ -9,7 +9,7 @@ modules {
       value = "rabbitmq"
     }
     param host {
-      value = "localhost"
+      value = "central"
     }
 
     # CSV of which type of stats to emit
