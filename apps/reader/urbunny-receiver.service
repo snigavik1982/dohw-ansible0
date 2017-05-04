@@ -6,10 +6,8 @@ After=network.target
 Type=simple
 User=root
 ExecStart=/bin/bash -c /opt/urbunny/receiver.py
-StandardOutput=syslog
-StandardError=syslog
 Restart=always
-RestartSec=5
+RestartSec=3
 
 
 [Install]

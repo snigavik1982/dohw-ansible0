@@ -3,21 +3,20 @@ import pika
 import time
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(
-        host='CENTRAL'))
+        host='central'))
 channel = connection.channel()
 
-
-channel.queue_declare(queue='urbunny')
+channel.queue_declare(queue='urbunny', durable=True)
+print(' [*] Waiting for messages.')
 
 def callback(ch, method, properties, body):
-    print(" [x] Received %r" % body)
+    print(" [x] Sleeping %r" % body)
     time.sleep(int(body))
-    print(" [+] Unsleep")
+    print(" [x] Woke up")
+    ch.basic_ack(delivery_tag = method.delivery_tag)
 
+channel.basic_qos(prefetch_count=1)
 channel.basic_consume(callback,
-                      queue='urbunny',
-                      no_ack=True)
+                      queue='urbunny')
 
-print(' [*] Waiting for messages. To exit press CTRL+C')
 channel.start_consuming()
-
