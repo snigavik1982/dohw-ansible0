@@ -72,11 +72,6 @@
       path: /etc/ganglia/gmetad.conf
       regexp: 'data_source\ "my\ cluster"\ localhost'
       replace: 'data_source "urbunny" central'
-  - name: Central Ganglia - config gmond cluster name
-    replace:
-      path: /etc/ganglia/gmond.conf
-      regexp: 'name\ =\ "unspecified"'
-      replace: 'name = "urbunny"'
   - name: Central Ganglia - config gmond unicast
     replace:
       path: /etc/ganglia/gmond.conf
