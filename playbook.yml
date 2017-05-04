@@ -20,6 +20,8 @@
       path: /etc/rabbitmq/rabbitmq.config
       regexp: '%%\ \{loopback_users,\ \[\]\},'
       replace: '{loopback_users, []}'
+  - name: Central RabbitMQ - management API enable
+    shell: /usr/sbin/rabbitmq-plugins enable rabbitmq_management
   - name: Central OS - RabbitMQ enable
     service:
       name: rabbitmq-server
@@ -63,7 +65,7 @@
       mode: 0755
   - name: Central Ganglia - install
     yum:
-      name: ganglia, ganglia-gmetad, ganglia-gmond, ganglia-web
+      name: ganglia, ganglia-gmetad, ganglia-gmond, ganglia-web, ganglia-gmond-python
       state: present
   - name: Central Ganglia - config gmetad cluster name
     replace:
@@ -72,7 +74,7 @@
       replace: 'data_source "urbunny" central'
   - name: Central Ganglia - config gmond cluster name
     replace:
-      path: /etc/ganglia/gmetad.conf
+      path: /etc/ganglia/gmond.conf
       regexp: 'name\ =\ "unspecified"'
       replace: 'name = "urbunny"'
   - name: Central Ganglia - config gmond unicast
@@ -97,6 +99,14 @@
     copy:
       src: /etc/ansible/apps/ganglia/ganglia.conf
       dest: /etc/httpd/conf.d/ganglia.conf
+  - name: Central Ganglia - install RabbitMQ python monitoring script
+    copy:
+      src: /etc/ansible/apps/ganglia/rabbitmq.py
+      dest: /usr/lib64/ganglia/python_modules/rabbitmq.py
+  - name: Central Ganglia - install RabbitMQ python monitoring script config
+    copy:
+      src: /etc/ansible/apps/ganglia/rabbitmq.pyconf
+      dest: /etc/ganglia/conf.d/rabbitmq.pyconf
   - name: Central Ganglia - gmetad enable
     service:
       name: gmetad
