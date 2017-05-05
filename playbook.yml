@@ -12,12 +12,12 @@
       state: started
       enabled: yes
   - name: Central Nagios - RabbitMQ monitoring script
-     copy:
+    copy:
       src: /etc/ansible/apps/nagios/rabbit.sh
       dest: /usr/lib64/nagios/rabbit.sh
       mode: 0755
   - name: Central Nagios - sudoers setup
-     copy:
+    copy:
       src: /etc/ansible/apps/nagios/nagios
       dest: /etc/sudoers.d/nagios
   - name: Central Ganglia - gmetad enable
