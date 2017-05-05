@@ -4,6 +4,7 @@
   roles:
     - rabbitmq-server
     - central-app
+    - ganglia-central
     - nagios
   tasks:
   - name: Central OS - RabbitMQ enable
