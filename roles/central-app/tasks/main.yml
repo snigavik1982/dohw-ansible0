@@ -1,0 +1,36 @@
+- name: Central OS - Java install
+  yum:
+    name: java, java-devel
+    state: present
+- name: Central App - mkdir
+  file:
+    path: /opt/urbunny
+    state: directory
+- name: Central App - install Send.java
+  copy:
+    src: Send.java
+    dest: /opt/urbunny/Send.java
+- name: Central App - install amqp-client
+  copy:
+    src: amqp-client-4.0.2.jar
+    dest: /opt/urbunny/amqp-client-4.0.2.jar
+- name: Central App - install slf4j-api
+  copy:
+    src: slf4j-api-1.7.21.jar
+    dest: /opt/urbunny/slf4j-api-1.7.21.jar
+- name: Central App - install slf4j-simple
+  copy:
+    src: slf4j-simple-1.7.22.jar
+    dest: /opt/urbunny/slf4j-simple-1.7.22.jar
+- name: Central App - compile
+  shell: cd /opt/urbunny && /usr/bin/javac -cp amqp-client-4.0.2.jar Send.java
+- name: Central App - install QSend.sh
+  copy:
+    src: QSend.sh
+    dest: /opt/urbunny/QSend.sh
+    mode: 0755
+- name: Central App - install QClog.sh
+  copy:
+    src: QClog.sh
+    dest: /opt/urbunny/QClog.sh
+    mode: 0755

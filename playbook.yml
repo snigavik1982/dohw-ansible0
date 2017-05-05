@@ -1,109 +1,24 @@
 ---
 - hosts: central
   roles:
+    - rabbitmq-server
+    - central-app
     - nagios
   remote_user: root
-  tasks:
-  - name: Central OS - hosts file
-    copy:
-      src: /etc/ansible/apps/hosts
-      dest: /etc/hosts
-  - name: Central OS - install RabbitMQ
-    yum:
-      name: rabbitmq-server
-      state: present
-  - name: Central RabbitMQ - reverse dns lookup
-    replace:
-      path: /etc/rabbitmq/rabbitmq.config
-      regexp: '%%\ \{reverse_dns_lookups,\ true\},'
-      replace: '{reverse_dns_lookups, false},'
-  - name: Central RabbitMQ - guest connect
-    replace:
-      path: /etc/rabbitmq/rabbitmq.config
-      regexp: '%%\ \{loopback_users,\ \[\]\},'
-      replace: '{loopback_users, []}'
-  - name: Central RabbitMQ - management API enable
-    shell: /usr/sbin/rabbitmq-plugins enable rabbitmq_management
   - name: Central OS - RabbitMQ enable
     service:
       name: rabbitmq-server
       state: started
       enabled: yes
-  - name: Central OS - Java install
-    yum:
-      name: java, java-devel
-      state: present
-  - name: Central App - mkdir
-    file:
-      path: /opt/urbunny
-      state: directory
-  - name: Central App - install Send.java
-    copy:
-      src: /etc/ansible/apps/writer/Send.java
-      dest: /opt/urbunny/Send.java
-  - name: Central App - install amqp-client
-    copy:
-      src: /etc/ansible/apps/writer/amqp-client-4.0.2.jar
-      dest: /opt/urbunny/amqp-client-4.0.2.jar
-  - name: Central App - install slf4j-api
-    copy:
-      src: /etc/ansible/apps/writer/slf4j-api-1.7.21.jar
-      dest: /opt/urbunny/slf4j-api-1.7.21.jar
-  - name: Central App - install slf4j-simple
-    copy:
-      src: /etc/ansible/apps/writer/slf4j-simple-1.7.22.jar
-      dest: /opt/urbunny/slf4j-simple-1.7.22.jar
-  - name: Central App - compile
-    shell: cd /opt/urbunny && /usr/bin/javac -cp amqp-client-4.0.2.jar Send.java
-  - name: Central App - install QSend.sh
-    copy:
-      src: /etc/ansible/apps/writer/QSend.sh
-      dest: /opt/urbunny/QSend.sh
+  - name: Central Nagios - RabbitMQ monitoring script
+     copy:
+      src: /etc/ansible/apps/nagios/rabbit.sh
+      dest: /usr/lib64/nagios/rabbit.sh
       mode: 0755
-  - name: Central App - install QClog.sh
-    copy:
-      src: /etc/ansible/apps/writer/QClog.sh
-      dest: /opt/urbunny/QClog.sh
-      mode: 0755
-  - name: Central Ganglia - install
-    yum:
-      name: ganglia, ganglia-gmetad, ganglia-gmond, ganglia-web, ganglia-gmond-python
-      state: present
-  - name: Central Ganglia - config gmetad cluster name
-    replace:
-      path: /etc/ganglia/gmetad.conf
-      regexp: 'data_source\ "my\ cluster"\ localhost'
-      replace: 'data_source "urbunny" central'
-  - name: Central Ganglia - config gmond unicast
-    replace:
-      path: /etc/ganglia/gmond.conf
-      regexp: 'mcast_join\ =\ 239\.2\.11\.71'
-      replace: '#mcast_join = 239.2.11.71'
-  - name: Central Ganglia - config gmond unicast2
-    replace:
-      path: /etc/ganglia/gmond.conf
-      regexp: 'bind\ =\ 239\.2\.11\.71'
-      replace: '#bind = 239.2.11.71'
-  - name: Central Ganglia - config gmond receive
-    lineinfile:
-      path: /etc/ganglia/gmond.conf
-      insertafter : 'udp_send_channel\ \{'
-      line: 'host = central'
-      state: present
-  - name: Central Ganglia - config htpasswd
-    shell: /usr/bin/htpasswd -bc /etc/httpd/auth.basic admin admin
-  - name: Central Ganglia - httpd config
-    copy:
-      src: /etc/ansible/apps/ganglia/ganglia.conf
-      dest: /etc/httpd/conf.d/ganglia.conf
-  - name: Central Ganglia - install RabbitMQ python monitoring script
-    copy:
-      src: /etc/ansible/apps/ganglia/rabbitmq.py
-      dest: /usr/lib64/ganglia/python_modules/rabbitmq.py
-  - name: Central Ganglia - install RabbitMQ python monitoring script config
-    copy:
-      src: /etc/ansible/apps/ganglia/rabbitmq.pyconf
-      dest: /etc/ganglia/conf.d/rabbitmq.pyconf
+  - name: Central Nagios - sudoers setup
+     copy:
+      src: /etc/ansible/apps/nagios/nagios
+      dest: /etc/sudoers.d/nagios
   - name: Central Ganglia - gmetad enable
     service:
       name: gmetad

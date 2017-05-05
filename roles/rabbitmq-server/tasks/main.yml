@@ -1,0 +1,20 @@
+- name: Central OS - hosts file
+  copy:
+    src: hosts
+    dest: /etc/hosts
+- name: Central OS - install RabbitMQ
+  yum:
+    name: rabbitmq-server
+    state: present
+- name: Central RabbitMQ - reverse dns lookup
+  replace:
+    path: /etc/rabbitmq/rabbitmq.config
+    regexp: '%%\ \{reverse_dns_lookups,\ true\},'
+    replace: '{reverse_dns_lookups, false},'
+- name: Central RabbitMQ - guest connect
+  replace:
+    path: /etc/rabbitmq/rabbitmq.config
+    regexp: '%%\ \{loopback_users,\ \[\]\},'
+    replace: '{loopback_users, []}'
+- name: Central RabbitMQ - management API enable
+  shell: /usr/sbin/rabbitmq-plugins enable rabbitmq_management
