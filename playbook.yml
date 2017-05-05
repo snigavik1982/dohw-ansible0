@@ -5,6 +5,7 @@
     - central-app
     - nagios
   remote_user: root
+  tasks:
   - name: Central OS - RabbitMQ enable
     service:
       name: rabbitmq-server
