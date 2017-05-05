@@ -1,10 +1,10 @@
 ---
 - hosts: central
+  remote_user: root
   roles:
     - rabbitmq-server
     - central-app
     - nagios
-  remote_user: root
   tasks:
   - name: Central OS - RabbitMQ enable
     service:
@@ -38,58 +38,7 @@
 
 - hosts: workers
   remote_user: root
-  tasks:
-  - name: Worker OS - hosts file
-    copy:
-      src: /etc/ansible/apps/hosts
-      dest: /etc/hosts
-  - name: Worker OS - install pika
-    yum:
-      name: python2-pika
-      state: present
-  - name: Worker App - mkdir
-    file:
-      path: /opt/urbunny
-      state: directory
-  - name: Worker App - receiver.py
-    copy:
-      src: /etc/ansible/apps/reader/receiver.py
-      dest: /opt/urbunny/receiver.py
-      mode: 0755
-  - name: Worker App - systemd config
-    copy:
-      src: /etc/ansible/apps/reader/urbunny-receiver.service
-      dest: /etc/systemd/system/urbunny-receiver.service
-  - name: Worker App install - systemd reload
-    shell: systemctl daemon-reload
-  - name: Worker App - service enable
-    service:
-      name: urbunny-receiver
-      state: started
-      enabled: yes
-  - name: Worker Ganglia - install
-    yum:
-      name: ganglia, ganglia-gmond
-      state: present
-  - name: Worker Ganglia - config gmond unicast
-    replace:
-      path: /etc/ganglia/gmond.conf
-      regexp: 'mcast_join\ =\ 239\.2\.11\.71'
-      replace: '#mcast_join = 239.2.11.71'
-  - name: Worker Ganglia - config gmond unicast2
-    replace:
-      path: /etc/ganglia/gmond.conf
-      regexp: 'bind\ =\ 239\.2\.11\.71'
-      replace: '#bind = 239.2.11.71'
-  - name: Worker Ganglia - config gmond receive
-    lineinfile:
-      path: /etc/ganglia/gmond.conf
-      insertafter : 'udp_send_channel\ \{'
-      line: 'host = central'
-      state: present
-  - name: Central Ganglia - gmond enable
-    service:
-      name: gmond
-      state: started
-      enabled: yes
+  roles:
+    - worker-app
+    - ganglia-worker
 ...
