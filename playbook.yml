@@ -1,5 +1,7 @@
 ---
 - hosts: central
+  roles:
+    - nagios
   remote_user: root
   tasks:
   - name: Central OS - hosts file
