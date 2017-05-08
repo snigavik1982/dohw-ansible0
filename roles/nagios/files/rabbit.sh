@@ -5,7 +5,7 @@ QUEUE_LENGTH=`/usr/sbin/rabbitmqctl list_queues name messages_ready messages | g
 if [ $QUEUE_LENGTH -eq 0 ]; then
         echo "WARNING - queue is empty"
         exit 1
-elif [ 30 -gt $QUEUE_LENGTH ] && [ $QUEUE_LENGTH -ne 0 ]; then
+elif [ 30 -gt $QUEUE_LENGTH ] || [ $QUEUE_LENGTH = 30 ]; then
         echo "OK - $QUEUE_LENGTH"
         exit 0
 elif [ $QUEUE_LENGTH -gt 30 ]; then
