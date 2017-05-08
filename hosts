@@ -1,4 +1,5 @@
 [central]
 CENTRAL	ansible_connection=local
 [workers]
-WORKER*	ansible_connection=local
+WORKER	ansible_connection=local
+WORKER-[1:9] ansible_connection=local
