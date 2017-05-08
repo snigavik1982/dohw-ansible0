@@ -40,7 +40,7 @@
       state: started
       enabled: yes
   - name: Enable Worker-App
-  service:
+    service:
     name: urbunny-receiver
       state: started
       enabled: yes
