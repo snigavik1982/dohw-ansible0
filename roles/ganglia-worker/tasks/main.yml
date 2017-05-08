@@ -1,25 +1,20 @@
-- name: Worker Ganglia - install
+- name: Install Ganglia
   yum:
     name: ganglia, ganglia-gmond
     state: present
-- name: Worker Ganglia - config gmond unicast
+- name: Configure gmond unicast - 1
   replace:
     path: /etc/ganglia/gmond.conf
     regexp: 'mcast_join\ =\ 239\.2\.11\.71'
     replace: '#mcast_join = 239.2.11.71'
-- name: Worker Ganglia - config gmond unicast2
+- name: Configure gmond unicast - 2
   replace:
     path: /etc/ganglia/gmond.conf
     regexp: 'bind\ =\ 239\.2\.11\.71'
     replace: '#bind = 239.2.11.71'
-- name: Worker Ganglia - config gmond receive
+- name: Configure gmond send channel
   lineinfile:
     path: /etc/ganglia/gmond.conf
     insertafter : 'udp_send_channel\ \{'
     line: 'host = central'
     state: present
-- name: Central Ganglia - gmond enable
-  service:
-    name: gmond
-    state: started
-    enabled: yes

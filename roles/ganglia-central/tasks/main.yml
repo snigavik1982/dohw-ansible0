@@ -1,39 +1,39 @@
-- name: Central Ganglia - install
+- name: Install Ganglia
   yum:
     name: ganglia, ganglia-gmetad, ganglia-gmond, ganglia-web, ganglia-gmond-python
     state: present
-- name: Central Ganglia - config gmetad cluster name
+- name: Configure gmetad cluster name
   replace:
     path: /etc/ganglia/gmetad.conf
     regexp: 'data_source\ "my\ cluster"\ localhost'
     replace: 'data_source "urbunny" central'
-- name: Central Ganglia - config gmond unicast
+- name: Configure gmond unicast - 1
   replace:
     path: /etc/ganglia/gmond.conf
     regexp: 'mcast_join\ =\ 239\.2\.11\.71'
     replace: '#mcast_join = 239.2.11.71'
-- name: Central Ganglia - config gmond unicast2
+- name: Configure gmond unicast - 2
   replace:
     path: /etc/ganglia/gmond.conf
     regexp: 'bind\ =\ 239\.2\.11\.71'
     replace: '#bind = 239.2.11.71'
-- name: Central Ganglia - config gmond receive
+- name: Configure gmond send channel
   lineinfile:
     path: /etc/ganglia/gmond.conf
     insertafter : 'udp_send_channel\ \{'
     line: 'host = central'
     state: present
-- name: Central Ganglia - config htpasswd
+- name: Configure htpasswd
   shell: /usr/bin/htpasswd -bc /etc/httpd/auth.basic admin admin
-- name: Central Ganglia - httpd config
+- name: Configure httpd
   copy:
     src: ganglia.conf
     dest: /etc/httpd/conf.d/ganglia.conf
-- name: Central Ganglia - install RabbitMQ python monitoring script
+- name: Install Ganglia RabbitMQ python monitoring script
   copy:
     src: rabbitmq.py
     dest: /usr/lib64/ganglia/python_modules/rabbitmq.py
-- name: Central Ganglia - install RabbitMQ python monitoring script config
+- name:  Install Ganglia RabbitMQ python monitoring script configuration
   copy:
     src: rabbitmq.pyconf
     dest: /etc/ganglia/conf.d/rabbitmq.pyconf

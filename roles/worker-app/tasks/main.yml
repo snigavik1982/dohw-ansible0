@@ -1,28 +1,23 @@
-- name: Worker OS - hosts file
+- name: Copy system hosts file
   copy:
     src: hosts
     dest: /etc/hosts
-- name: Worker OS - install pika
+- name: Install pika
   yum:
     name: python2-pika
     state: present
-- name: Worker App - mkdir
+- name: Create App directory
   file:
     path: /opt/urbunny
     state: directory
-- name: Worker App - receiver.py
+- name: Install receiver.py
   copy:
     src: receiver.py
     dest: /opt/urbunny/receiver.py
     mode: 0755
-- name: Worker App - systemd config
+- name: Install systemd configuration
   copy:
     src: urbunny-receiver.service
     dest: /etc/systemd/system/urbunny-receiver.service
-- name: Worker App install - systemd reload
+- name: Reload systemd
   shell: systemctl daemon-reload
-- name: Worker App - service enable
-  service:
-    name: urbunny-receiver
-    state: started
-    enabled: yes
