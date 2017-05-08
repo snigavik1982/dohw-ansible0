@@ -7,22 +7,22 @@
     - ganglia-central
     - nagios
   tasks:
-  - name: enable RabbitMQ
+  - name: Enable RabbitMQ
     service:
       name: rabbitmq-server
       state: started
       enabled: yes
-  - name: Ganglia - gmetad enable
+  - name: Enable Ganglia gmetad
     service:
       name: gmetad
       state: started
       enabled: yes
-  - name: Ganglia - gmond enable
+  - name: Enable Ganglia gmond
     service:
       name: gmond
       state: started
       enabled: yes
-  - name: Ganglia - httpd enable
+  - name: Enable HTTPD
     service:
       name: httpd
       state: started
@@ -35,8 +35,13 @@
     - ganglia-worker
   tasks:
   - name: Enable Ganglia gmond
+    service:
+      name: gmond
+      state: started
+      enabled: yes
+  - name: Enable Worker-App
   service:
-    name: gmond
-    state: started
-    enabled: yes
+    name: urbunny-receiver
+      state: started
+      enabled: yes
 ...
