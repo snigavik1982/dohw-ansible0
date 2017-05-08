@@ -1,22 +1,7 @@
 ---
-# Playbook to install nagios server and generate hosts/checks
-# This also installs NRPE on clients for more in-depth checks based on
-# Ansible inventory
 # author: Will Foster (@sadsfae)
 # https://hobo.house/2016/06/24/automate-nagios-deployment-with-ansible/
-
-- name: Check Operating System
-  fail:
-    msg="You're not running a supported operating system (CentOS or RHEL 7+)"
-  when: ((ansible_os_family != "RedHat") or (ansible_distribution_major_version|int < 7))
-
-#- name: Import EPEL GPG Key
-#  rpm_key: key=https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
-#    state=present
-
-#- name: Check for EPEL repo
-#  yum: name=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-#    state=present
+# Edited by skuzaev
 
 - name: Install HTTPD and OpenSSL
   yum: name={{ item }} state=present
@@ -29,7 +14,7 @@
     - openssl-libs
     - net-snmp-utils
 
-- name: Setup nagios SSL HTTPD vhost
+- name: Setup nagios HTTPD vhost
   copy: src=nagios.conf dest=/etc/httpd/conf.d/
 
 - name: Install nagios packages and common plugins
@@ -51,16 +36,16 @@
     - nagios-plugins-disk
     - libsemanage-python
 
-# - name: Check nagios Users
-#  stat: path=/etc/nagios/passwd
-#  ignore_errors: true
-#  register: nagios_user_pwfile_exists
+- name: Check nagios Users
+  stat: path=/etc/nagios/passwd
+  ignore_errors: true
+  register: nagios_user_pwfile_exists
 
-#- name: Create empty password file
-#  command: touch /etc/nagios/passwd
-#  args:
-#    creates: /etc/nagios/passwd
-#  when: nagios_user_pwfile_exists != 0
+- name: Create empty password file
+  command: touch /etc/nagios/passwd
+  args:
+    creates: /etc/nagios/passwd
+  when: nagios_user_pwfile_exists != 0
 
 - name: Create nagios admin user
   command: htpasswd -b -c /etc/nagios/passwd nagiosadmin changeme
@@ -74,30 +59,23 @@
 - name: Configure nagios main configuration
   copy: src=nagios.cfg dest=/etc/nagios/nagios.cfg
 
-#- name: Copy idrac check plugin
-#  copy: src=idrac_2.2rc4 dest=/usr/lib64/nagios/plugins/idrac_2.2rc4 mode="a+x"
-
-#- name: Configure Dell idrac snmp mib file
-#  copy: src=idrac-smiv2.mib  dest={{snmp_mib_path}}/ mode=0755
-
 - name: Configure nagios localhost monitoring
   copy: src=localhost.cfg dest=/etc/nagios/objects/localhost.cfg
 
 - name: Create generic nagios services config
-  copy: src=services.cfg dest=/etc/nagios/
+  copy: src=services.cfg dest=/etc/nagios/services.cfg
+  
+- name: Copy RabbitMQ monitoring script
+  copy: src=rabbit.sh dest=/usr/lib64/nagios/rabbit.sh mode=0755
+
+- name: Setup nagios sudoers
+  copy: src=nagios dest=/etc/sudoers.d/nagios
 
 - name: Generate the nagios monitoring templates
   template: src={{ item + ".j2" }}
             dest=/etc/nagios/conf.d/{{ item }}
   with_items:
-#    - oobservers.cfg
-#    - switches.cfg
-#    - webservers.cfg
-#    - servers.cfg
     - commands.cfg
-#    - elkservers.cfg
-#    - elasticsearch.cfg
-#    - idrac.cfg
   register: nagios_needs_restart
 
 - name: Generate the nagios contact template
@@ -111,16 +89,6 @@
             dest=/etc/nagios/{{ item }}
   with_items:
     - cgi.cfg
-
-# SELinux boolean for nagios
-- name: Apply SELinux boolean nagios_run_sudo
-  seboolean: name=nagios_run_sudo state=yes persistent=yes
-  ignore_errors: true
-
-# SELinux boolean for nagios
-- name: Apply SELinux boolean logging_syslogd_run_nagios_plugins
-  seboolean: name=logging_syslogd_run_nagios_plugins state=yes persistent=yes
-  ignore_errors: true
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1291718
 - name: Create nagios socket tmp files

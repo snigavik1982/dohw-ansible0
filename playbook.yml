@@ -12,15 +12,6 @@
       name: rabbitmq-server
       state: started
       enabled: yes
-  - name: Central Nagios - RabbitMQ monitoring script
-    copy:
-      src: /etc/ansible/apps/nagios/rabbit.sh
-      dest: /usr/lib64/nagios/rabbit.sh
-      mode: 0755
-  - name: Central Nagios - sudoers setup
-    copy:
-      src: /etc/ansible/apps/nagios/nagios
-      dest: /etc/sudoers.d/nagios
   - name: Central Ganglia - gmetad enable
     service:
       name: gmetad
