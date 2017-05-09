@@ -36,4 +36,4 @@
     mode: 0755
 - name: Put some numbers in queue (see Description for details)
   command: /opt/urbunny/QClog.sh 10
-  when: queue_warmup = 1
+  when: queue_warmup
