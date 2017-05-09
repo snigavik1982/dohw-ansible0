@@ -1,7 +1,11 @@
 ---
-# author: Will Foster (@sadsfae)
+# This role installs and sets up Nagios Core monitoring with Web Interface.
+# I've used Nagios for queue alerting, though original idea was to feed queue
+# stats to Nagios from Ganglia, but it didn't work as expected. So i use simple
+# bash script to report queue stats every 5 minutes.
+# Original author: Will Foster (@sadsfae)
 # https://hobo.house/2016/06/24/automate-nagios-deployment-with-ansible/
-# Edited by skuzaev
+# Edited by skuzaev, i just cut off some stuff.
 
 - name: Install HTTPD and OpenSSL
   yum: name={{ item }} state=present
@@ -153,8 +157,4 @@
 - name: Display nagios guest information
   debug:
     msg="Guest read only users at http://localhost:8082/nagios using {{nagios_ro_username}} / {{nagios_ro_password}}"
-
-- name: Display user password change information
-  debug:
-    msg="Run the following to change the nagios password --> htpasswd /etc/nagios/passwd nagiosadmin"
 

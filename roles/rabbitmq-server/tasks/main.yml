@@ -1,3 +1,11 @@
+# This role installs from repo and starts RabbitMQ server on CENTRAL VM.
+# I disabled reverse_dns_lookup "just in case" and
+# allowed unauthenticated guest access as per requirements.
+# We also have to enable RabbitMQ Management API to make Ganglia queue 
+# monitoring work.
+# We put /etc/hosts file here as it's first role to run and just a file copy
+# doesn't look suitable for a standalone role to me.
+#
 - name: Copy system hosts file
   copy:
     src: hosts

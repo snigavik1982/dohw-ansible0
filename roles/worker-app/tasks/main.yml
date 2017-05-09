@@ -1,3 +1,10 @@
+# This role installs simple Python App with lib to consume messages
+# from our queue and sleep 'message payload' seconds as per
+# requirements. Receiver installs as systemd service and restarts
+# in case of failure. See README for known issues!
+# You can run as many receivers as you'd like in parallel.
+# As it's the first role to run we also copy /etc/hosts with it.
+#
 - name: Copy system hosts file
   copy:
     src: hosts

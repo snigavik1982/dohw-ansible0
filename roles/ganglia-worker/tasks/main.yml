@@ -1,3 +1,6 @@
+# This role installs and sets up Ganglia gmond
+# WORKER* hosts. Nothing special.
+#
 - name: Install Ganglia
   yum:
     name: ganglia, ganglia-gmond

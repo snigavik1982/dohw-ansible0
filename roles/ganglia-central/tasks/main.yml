@@ -1,3 +1,10 @@
+# This role installs and sets up Ganglia Performance Monitoring with
+# Web Interface for CENTRAL VM.
+# As we have internal network I've decided to use unicast for comms.
+# This role also sets up RabbitMQ Ganglia monitoring, using scripts from
+# official repository of user-contributed Gmond Python DSO modules.
+# (https://github.com/ganglia/gmond_python_modules)
+#
 - name: Install Ganglia
   yum:
     name: ganglia, ganglia-gmetad, ganglia-gmond, ganglia-web, ganglia-gmond-python

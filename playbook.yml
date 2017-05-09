@@ -1,4 +1,11 @@
 ---
+# Ansible Playbook for Devops Homework by skuzaev.
+# Ir provisions CENTRAL and WORKER* VM's.
+# CENTRAL runs RabbitMQ for queue, and Ganglia and Nagios for performance
+# monitoring and alerting.
+# WORKER* run Pyhton App to consume messages form queue.
+# See individual role files and attached README for more details.
+#
 - hosts: central
   remote_user: root
   roles:

@@ -1,3 +1,11 @@
+# This role installs and compiles simple Java App to populate our queue with
+# numbers on CENTRAL VM.
+# It installs Java with compiler, compiles the App and copies simple scripts
+# to play with RabbitMQ.
+# There's a vars file - roles/central-app/vars/main.yml - edit it to
+# disable queue warm up. Somehow Ganglia doesn't discover queue if it appears to be
+# created after gmond start, so I pop some numbers into queue.
+#
 - name: Install Java
   yum:
     name: java, java-devel
