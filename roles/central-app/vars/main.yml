@@ -1,0 +1,5 @@
+---
+# Central App vars: single variable to warm up RabbitMQ queue
+# I decided it a better way to populate Ganglia with fancy RabbitMQ graphs
+# Change to 0 to disable, then Ganglia won't show urbunny queue-specific stats
+queue_warmup: 1

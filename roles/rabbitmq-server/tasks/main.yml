@@ -18,3 +18,9 @@
     replace: '{loopback_users, []}'
 - name: Configure RabbitMQ - management API enable
   shell: /usr/sbin/rabbitmq-plugins enable rabbitmq_management
+- name: Enable RabbitMQ
+  service:
+    name: rabbitmq-server
+    state: started
+    enabled: yes
+    

@@ -7,11 +7,6 @@
     - ganglia-central
     - nagios
   tasks:
-  - name: Enable RabbitMQ
-    service:
-      name: rabbitmq-server
-      state: started
-      enabled: yes
   - name: Enable Ganglia gmetad
     service:
       name: gmetad
